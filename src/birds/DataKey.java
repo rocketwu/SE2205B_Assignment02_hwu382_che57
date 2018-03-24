@@ -29,8 +29,8 @@ public class DataKey {
     public int compareTo(DataKey k) {
        if (this.birdSize==k.birdSize)
        {
-           int temp=this.birdName.compareTo(k.birdName);
-           return temp/Math.abs(temp);
+           Integer temp=this.birdName.compareTo(k.birdName);
+           return temp.compareTo(0);
        }
        else{
             return ((Integer)this.birdSize).compareTo(k.birdSize);

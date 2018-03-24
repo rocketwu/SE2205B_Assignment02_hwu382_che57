@@ -20,7 +20,6 @@ public class BirdsController implements Initializable {
 
     @FXML
     private MenuBar mainMenu;
-    
 
     @FXML
     public void exit() {
