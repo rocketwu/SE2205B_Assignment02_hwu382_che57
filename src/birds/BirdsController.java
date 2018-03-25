@@ -18,12 +18,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -32,7 +36,9 @@ import javafx.stage.Stage;
  * @author Abdelkader
  */
 public class BirdsController implements Initializable {
-
+    
+    private OrderedDictionary data;
+    private MediaPlayer sound;
     @FXML
     private MenuBar mainMenu;
     @FXML
@@ -45,6 +51,10 @@ public class BirdsController implements Initializable {
     private TextField sName;
     @FXML
     private ComboBox sSize;
+    @FXML
+    private Button playBtn;
+    @FXML
+    private Button stopBtn;
 
     @FXML
     public void exit() {
@@ -54,6 +64,7 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void loadDictionary(){
+        data=new OrderedDictionary();
         try {
             Scanner input=new Scanner(new File("BirdsDatabase.txt"));
             while(input.hasNextLine()){
@@ -64,17 +75,23 @@ public class BirdsController implements Initializable {
                 int size=Integer.parseInt(reader);
                 String name=input.nextLine();
                 String about=input.nextLine();
-                String image="file:src/images/"+name+".jpg";
-                String sound="file:src/sounds/"+name+".mp3";
+                String image="src/images/"+name+".jpg";
+                String sound="src/sounds/"+name+".mp3";
+                data.insert(new BirdRecord(new DataKey(name,size),about,sound,image));
             }
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException | DictionaryException ex) {
             this.error(ex);
         }
+        first();
     }
     
     @FXML
     public void first(){
-        
+        try {
+            showBird(data.smallest());
+        } catch (DictionaryException ex) {
+            this.error(ex);
+        }
     }
     
     @FXML
@@ -104,12 +121,19 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void play(){
+        if(sound==null) return;
+        sound.play();
+        stopBtn.setDisable(false);
+        playBtn.setDisable(true);
         
     }
 
     @FXML
     public void stop(){
-        
+        if(sound==null) return;
+        sound.stop();
+        stopBtn.setDisable(true);
+        playBtn.setDisable(false);
     }
     
     private void error(String msg){
@@ -137,7 +161,17 @@ public class BirdsController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+        stopBtn.setDisable(true);
+        playBtn.setDisable(true);
+    }
+
+    private void showBird(BirdRecord bird) {
+        aName.setText(bird.getDataKey().getBirdName());
+        aAbout.setText(bird.getAbout());
+        imagePane.getChildren().add(new ImageView(new Image(new File(bird.getImage()).toURI().toString())));
+        sound=new MediaPlayer(new Media(new File(bird.getSound()).toURI().toString()));
+        stopBtn.setDisable(true);
+        playBtn.setDisable(false);
     }
 
 }

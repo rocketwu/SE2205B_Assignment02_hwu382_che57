@@ -79,7 +79,7 @@
                         <Insets />
                      </GridPane.margin>
                   </Label>
-                  <Label fx:id="aAbout" alignment="TOP_LEFT" text="About" textFill="#0046ff" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                  <Label fx:id="aAbout" alignment="TOP_LEFT" text="About" textFill="#0046ff" wrapText="true" GridPane.rowIndex="1" GridPane.valignment="TOP">
                      <padding>
                         <Insets top="6.0" />
                      </padding>
@@ -103,12 +103,12 @@
                   <Pane fx:id="imagePane" prefHeight="200.0" prefWidth="200.0" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0" GridPane.columnIndex="1">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#play" prefHeight="80.0" prefWidth="80.0" style="-fx-background-color: rgba(34,160,34,255);" text="Play" textFill="#f2f2f2">
+                        <Button fx:id="playBtn" mnemonicParsing="false" onAction="#play" prefHeight="80.0" prefWidth="80.0" style="-fx-background-color: rgba(34,160,34,1);" text="Play" textFill="#f2f2f2">
                            <font>
                               <Font name="System Bold" size="20.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#stop" prefHeight="80.0" prefWidth="80.0" style="-fx-background-color: rgba(34,160,34,0.5);" text="Stop" textFill="#f2f2f2">
+                        <Button fx:id="stopBtn" mnemonicParsing="false" onAction="#stop" prefHeight="80.0" prefWidth="80.0" style="-fx-background-color: rgba(34,160,34,1);" text="Stop" textFill="#f2f2f2">
                            <font>
                               <Font name="System Bold" size="20.0" />
                            </font>
