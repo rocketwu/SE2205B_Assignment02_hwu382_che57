@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -88,6 +88,7 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void first(){
+        if(data==null||data.isEmpty()) return;
         try {
             showBird(data.smallest());
         } catch (DictionaryException ex) {
@@ -97,6 +98,7 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void last(){
+        if(data==null||data.isEmpty()) return;
         try {
             showBird(data.largest());
         } catch (DictionaryException ex) {
@@ -106,6 +108,7 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void next(){
+        if(data==null||data.isEmpty()) return;
         try {
             showBird(data.successor(cBird.getDataKey()));
         } catch (DictionaryException ex) {
@@ -115,6 +118,7 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void previous(){
+        if(data==null||data.isEmpty()) return;
         try {
             showBird(data.predecessor(cBird.getDataKey()));
         } catch (DictionaryException ex) {
@@ -124,17 +128,11 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void delete(){
+        if(data==null||data.isEmpty()) return;
         try {
             data.remove(cBird.getDataKey());
             if(data.isEmpty()){
-                if (sound!=null) sound.stop();
-                cBird=null;
-                aName.setText("Name");
-                aAbout.setText("About");
-                imagePane.getChildren().clear();
-                sound=null;
-                stopBtn.setDisable(true);
-                playBtn.setDisable(true);
+                this.setForm();
                 return;
             }
             next();
@@ -145,11 +143,32 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void find(){
-        
+        if(data==null||data.isEmpty()) return;
+        int size;
+        String name=sName.getText();
+        switch ((String)sSize.getValue()){
+            case "Small":
+                size=1;
+                break;
+            case "Medium":
+                size=2;
+                break;
+            case "Large":
+                size=3;
+                break;
+            default:
+                size=0;
+        }
+        try {
+            showBird(data.find(new DataKey(name,size)));
+        } catch (DictionaryException ex) {
+            this.error(ex);
+        }
     }
     
     @FXML
     public void play(){
+        if(data==null||data.isEmpty()) return;  //no needed
         if(sound==null) return;
         sound.play();
         stopBtn.setDisable(false);
@@ -159,6 +178,7 @@ public class BirdsController implements Initializable {
 
     @FXML
     public void stop(){
+        if(data==null||data.isEmpty()) return;  //no needed
         if(sound==null) return;
         sound.stop();
         stopBtn.setDisable(true);
@@ -190,8 +210,23 @@ public class BirdsController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        this.setForm();
+    }
+    
+    private void setForm(){
+        cBird=null;
+        aName.setText("Name");
+        aAbout.setText("About");
+        imagePane.getChildren().clear();
+        sound=null;
         stopBtn.setDisable(true);
         playBtn.setDisable(true);
+        ObservableList<String> sizeData = FXCollections.observableArrayList();
+        sizeData.add("Small");
+        sizeData.add("Medium");
+        sizeData.add("Large");
+        sSize.setItems(sizeData);
+        sSize.setValue("Small");
     }
 
     private void showBird(BirdRecord bird) {
