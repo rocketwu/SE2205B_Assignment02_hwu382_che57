@@ -15,6 +15,7 @@ public class OrderedDictionary implements OrderedDictionaryADT {
     
     OrderedDictionary(){
         root=new Node(null);
+        //root.makeLeaf();
     }
     
     @Override
@@ -88,34 +89,18 @@ public class OrderedDictionary implements OrderedDictionaryADT {
             else if(node.left.value==null||node.right.value==null){
                 //one and only one of children is non-null-value node
                 Node temp=node.left.value==null?node.right:node.left;               //get the non-null child
-                Node pNode=node.parent;                                             //get the parent
-                if(k.compareTo(pNode.value.getDataKey())==1){
-                    //target at right
-                    pNode.right=temp;
-                }else{
-                    pNode.left=temp;
-                }
-                temp.parent=pNode;
+                node.value=temp.value;
+                node.left=temp.left;
+                node.right=temp.right;
+                temp.left.parent=node;
+                temp.right.parent=node;
             }
             else{
                 //two non-null-value children
-                Node cNode=node.left;
-                Node pNode=node.parent;
-                while(cNode.right.value!=null){
-                    //find the right most child of the left tree
-                    cNode.cpNode(cNode.right);
-                }
-                remove(cNode.value.getDataKey());
-                if(k.compareTo(pNode.value.getDataKey())==1){
-                    //target at right
-                    pNode.right=cNode;
-                }else{
-                    pNode.left=cNode;
-                }
-                cNode.parent=pNode;
-                cNode.right=node.right;
-                cNode.left=node.left;                                               //!!!!!!!!!!!!maybe a bug!!!!!!!!!!!!!
-        }
+                BirdRecord temp = subTree(node.left).largest();
+                remove(temp.getDataKey());
+                node.value=temp;
+            }
         }catch (DictionaryException ex){
             throw new DictionaryException("No such record key exists");
         }
@@ -126,9 +111,10 @@ public class OrderedDictionary implements OrderedDictionaryADT {
 
     @Override
     public BirdRecord successor(DataKey k) throws DictionaryException {
+        if (k.compareTo(this.largest().getDataKey())==0) throw new DictionaryException("There is no successor for the given record key");
+        if (k.compareTo(this.largest().getDataKey())==1) return this.predecessor(k);
         try{
-            Node node=findNode(k);
-            if (k.compareTo(this.largest().getDataKey())==0) throw new DictionaryException("There is no successor for the given record key");
+            Node node=findNode(k);            
             if (node.right.value==null){
                 Node cNode=node.parent;
                 while(k.compareTo(cNode.value.getDataKey())!=-1){
@@ -151,9 +137,10 @@ public class OrderedDictionary implements OrderedDictionaryADT {
 
     @Override
     public BirdRecord predecessor(DataKey k) throws DictionaryException {
+        if (k.compareTo(this.smallest().getDataKey())==0) throw new DictionaryException("There is no predecessor for the given record key");
+        if (k.compareTo(this.smallest().getDataKey())==-1) return this.successor(k);
         try{
-            Node node=findNode(k);
-            if (k.compareTo(this.smallest().getDataKey())==0) throw new DictionaryException("There is no predecessor for the given record key");
+            Node node=findNode(k);            
             if (node.left.value==null){
                 Node cNode=node.parent;
                 while(k.compareTo(cNode.value.getDataKey())!=1){
@@ -228,7 +215,8 @@ public class OrderedDictionary implements OrderedDictionaryADT {
         void makeLeaf(){
             left=new Node(null);
             right=new Node(null);
-            left.parent=right.parent=this;
+            left.parent=this;
+            right.parent=this;
         }
         
         void cpNode(Node n){

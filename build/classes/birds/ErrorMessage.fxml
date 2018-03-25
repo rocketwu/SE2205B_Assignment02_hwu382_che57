@@ -8,6 +8,10 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="birds.ErrorMessage">
    <children>
-      <Label fx:id="msg" layoutX="185.0" layoutY="43.0" text="Label" />
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="400.0">
+         <children>
+            <Label fx:id="msg" alignment="CENTER" text="Label" wrapText="true" />
+         </children>
+      </HBox>
    </children>
 </Pane>

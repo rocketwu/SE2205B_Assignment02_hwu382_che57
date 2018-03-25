@@ -39,6 +39,7 @@ public class BirdsController implements Initializable {
     
     private OrderedDictionary data;
     private MediaPlayer sound;
+    private BirdRecord cBird;
     @FXML
     private MenuBar mainMenu;
     @FXML
@@ -96,22 +97,50 @@ public class BirdsController implements Initializable {
     
     @FXML
     public void last(){
-        
+        try {
+            showBird(data.largest());
+        } catch (DictionaryException ex) {
+            this.error(ex);
+        }
     }
     
     @FXML
     public void next(){
-        
+        try {
+            showBird(data.successor(cBird.getDataKey()));
+        } catch (DictionaryException ex) {
+            this.error(ex);
+        }
     }
     
     @FXML
     public void previous(){
-        
+        try {
+            showBird(data.predecessor(cBird.getDataKey()));
+        } catch (DictionaryException ex) {
+            this.error(ex);
+        }
     }
     
     @FXML
     public void delete(){
-        
+        try {
+            data.remove(cBird.getDataKey());
+            if(data.isEmpty()){
+                if (sound!=null) sound.stop();
+                cBird=null;
+                aName.setText("Name");
+                aAbout.setText("About");
+                imagePane.getChildren().clear();
+                sound=null;
+                stopBtn.setDisable(true);
+                playBtn.setDisable(true);
+                return;
+            }
+            next();
+        } catch (DictionaryException ex) {
+            this.error(ex);
+        }
     }
     
     @FXML
@@ -156,7 +185,7 @@ public class BirdsController implements Initializable {
     }
     
     private void error(Exception ex){
-        error(ex.toString());
+        error(ex.getMessage());
     }
 
     @Override
@@ -166,12 +195,18 @@ public class BirdsController implements Initializable {
     }
 
     private void showBird(BirdRecord bird) {
+        if (sound!=null) sound.stop();
+        cBird=bird;
         aName.setText(bird.getDataKey().getBirdName());
         aAbout.setText(bird.getAbout());
         imagePane.getChildren().add(new ImageView(new Image(new File(bird.getImage()).toURI().toString())));
         sound=new MediaPlayer(new Media(new File(bird.getSound()).toURI().toString()));
         stopBtn.setDisable(true);
         playBtn.setDisable(false);
+        
     }
+    
+    
+    
 
 }
