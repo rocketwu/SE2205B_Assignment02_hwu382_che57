@@ -133,6 +133,7 @@ public class BirdsController implements Initializable {
             data.remove(cBird.getDataKey());
             if(data.isEmpty()){
                 this.setForm();
+                this.error("No More Bird To Show");
                 return;
             }
             next();
